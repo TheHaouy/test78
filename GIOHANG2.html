@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Giỏ hàng</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --primary-green: #2e7d32;
+      --accent-green: #4caf50;
+      --light-green: #81c784;
+      --soft-green: #a5d6a7;
+      --light-bg: #e8f5e8;
+      --very-light-bg: #f1f8e9;
+      --text-dark: #1b5e20;
+      --border-green: #c8e6c9;
+      --shadow-green: rgba(46, 125, 50, 0.15);
+      --gradient-green: linear-gradient(135deg, #2e7d32, #4caf50);
+    }
+
+    body {
+      background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 50%, #e0f2e0 100%);
+      padding: 20px;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--text-dark);
+      font-size: 14px;
+      min-height: 100vh;
+    }
+
+    .breadcrumb {
+      padding: 0.5rem 0;
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      font-size: 14px;
+      border: 1px solid var(--border-green);
+      margin-bottom: 24px;
+    }
+    
+    .breadcrumb-item + .breadcrumb-item::before {
+      content: ">";
+      color: var(--accent-green);
+      padding: 0 0.6rem;
+      font-weight: bold;
+    }
+
+    .breadcrumb-item a {
+      color: var(--primary-green);
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .breadcrumb-item a:hover {
+      background: rgba(76, 175, 80, 0.1);
+      color: var(--accent-green);
+    }
+
+    #cartTitle {
+      color: var(--primary-green);
+      font-weight: 700;
+      font-size: 28px;
+      text-shadow: 0 2px 4px rgba(46, 125, 50, 0.1);
+      margin-bottom: 24px;
+    }
+
+    .cart-table {
+      background: linear-gradient(145deg, rgba(255,255,255,0.95), rgba(248,255,248,0.9));
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px var(--shadow-green);
+      border: 2px solid var(--border-green);
+      backdrop-filter: blur(15px);
+    }
+    
+    .cart-table thead th {
+      border-bottom: 3px solid var(--soft-green);
+      vertical-align: middle;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--primary-green);
+      background: var(--gradient-green);
+      color: white;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 18px 16px;
+    }
+    
+    .cart-table tbody tr > td {
+      vertical-align: middle;
+      border-top: 1px solid var(--border-green);
+      padding: 20px 16px;
+      background: rgba(255,255,255,0.8);
+      transition: all 0.3s ease;
+    }
+
+    .cart-table tbody tr:hover > td {
+      background: rgba(232, 245, 232, 0.4);
+    }
+
+    .product-img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      border: 3px solid var(--soft-green);
+      padding: 6px;
+      background: var(--very-light-bg);
+      border-radius: 12px;
+      margin-right: 16px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(46, 125, 50, 0.1);
+    }
+
+    .product-img:hover {
+      transform: scale(1.05);
+      border-color: var(--accent-green);
+      box-shadow: 0 6px 20px rgba(46, 125, 50, 0.2);
+    }
+
+    .product-info strong {
+      display: block;
+      font-weight: 700;
+      color: var(--primary-green);
+      font-size: 16px;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    
+    .product-desc {
+      color: var(--text-dark);
+      font-size: 13px;
+      line-height: 1.4;
+      margin-bottom: 4px;
+      white-space: normal;
+      max-width: 300px;
+      opacity: 0.85;
+    }
+
+    .quantity-input {
+      width: 70px;
+      padding: 10px 12px;
+      font-size: 15px;
+      border: 2px solid var(--soft-green);
+      border-radius: 8px;
+      text-align: center;
+      background: var(--very-light-bg);
+      color: var(--text-dark);
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .quantity-input:focus {
+      outline: none;
+      border-color: var(--primary-green);
+      box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+      background: white;
+      transform: scale(1.05);
+    }
+
+    .summary-card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(240,255,240,0.9));
+      border: 3px solid var(--soft-green);
+      padding: 28px;
+      max-width: 400px;
+      font-size: 15px;
+      border-radius: 20px;
+      box-shadow: 0 12px 40px var(--shadow-green);
+      backdrop-filter: blur(15px);
+      width: 100%;
+      position: sticky;
+      top: 20px;
+    }
+
+    .summary-title {
+      font-weight: 800;
+      font-size: 24px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-green);
+      padding-bottom: 12px;
+      color: var(--primary-green);
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .summary-row {
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-dark);
+      font-size: 16px;
+      padding: 4px 0;
+    }
+    
+    .summary-row strong {
+      margin: 0;
+      color: var(--primary-green);
+      font-weight: 700;
+    }
+
+    .btn-checkout {
+      background: var(--gradient-green);
+      border: none;
+      width: 100%;
+      font-weight: 700;
+      color: white;
+      font-size: 18px;
+      padding: 16px 0;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+    }
+    
+    .btn-checkout:hover,
+    .btn-checkout:focus {
+      background: linear-gradient(135deg, #43a047, #66bb6a);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 12px 30px rgba(46, 125, 50, 0.4);
+      outline: none;
+    }
+
+    .btn-checkout:active {
+      transform: translateY(-1px) scale(0.98);
+      box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+    }
+
+    .continue-shopping {
+      font-size: 16px;
+      color: var(--primary-green);
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 24px;
+      display: inline-flex;
+      align-items: center;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 10px;
+      background: rgba(232, 245, 232, 0.3);
+      border: 2px solid var(--border-green);
+      transition: all 0.3s ease;
+    }
+    
+    .continue-shopping:hover {
+      background: rgba(200, 230, 201, 0.4);
+      color: var(--accent-green);
+      text-decoration: none;
+      transform: translateX(-5px);
+      border-color: var(--accent-green);
+    }
+
+    .continue-shopping::before {
+      content: "← ";
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    #btnSelectAll, #btnDeleteAll {
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      border: 2px solid;
+    }
+
+    #btnSelectAll {
+      background: var(--gradient-green);
+      color: white;
+      border-color: var(--primary-green);
+      box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3);
+    }
+    
+    #btnSelectAll:hover {
+      background: linear-gradient(135deg, #43a047, #66bb6a);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+    }
+
+    #btnDeleteAll {
+      background: linear-gradient(135deg, #d32f2f, #f44336);
+      color: white;
+      border-color: #d32f2f;
+      box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+    }
+    
+    #btnDeleteAll:hover {
+      background: linear-gradient(135deg, #c62828, #e57373);
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(211, 47, 47, 0.4);
+    }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      padding: 8px;
+      color: #d32f2f;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.3s ease;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-delete:hover {
+      background: rgba(211, 47, 47, 0.1);
+      color: #b71c1c;
+      transform: scale(1.1);
+    }
+
+    /* Enhanced Modal Styling */
+    .modal-backdrop {
+      background: rgba(46, 125, 50, 0.25) !important;
+      backdrop-filter: blur(10px);
+    }
+
+    .modal-content {
+      background: linear-gradient(145deg, rgba(255,255,255,0.98), rgba(248,255,248,0.95)) !important;
+      border: 3px solid var(--accent-green) !important;
+      border-radius: 20px !important;
+      box-shadow: 0 25px 80px rgba(46, 125, 50, 0.3) !important;
+      backdrop-filter: blur(15px);
+    }
+
+    .modal-header {
+      background: var(--gradient-green) !important;
+      color: white !important;
+      border-bottom: none !important;
+      padding: 20px 24px !important;
+      border-radius: 17px 17px 0 0 !important;
+    }
+
+    .modal-title {
+      color: white !important;
+      font-weight: 700 !important;
+      font-size: 1.4rem !important;
+      display: flex;
+      align-items: center;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .modal-body {
+      padding: 24px !important;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .modal-footer {
+      background: var(--very-light-bg) !important;
+      border-top: 2px solid var(--border-green) !important;
+      padding: 20px 24px !important;
+      border-radius: 0 0 17px 17px !important;
+      gap: 12px;
+    }
+
+    .btn-success {
+      background: var(--gradient-green) !important;
+      border: none !important;
+      padding: 12px 24px !important;
+      border-radius: 10px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      transition: all 0.3s ease !important;
+      box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3) !important;
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(135deg, #43a047, #66bb6a) !important;
+      transform: translateY(-2px) scale(1.02) !important;
+      box-shadow: 0 8px 25px rgba(46, 125, 50, 0.4) !important;
+    }
+
+    .btn-secondary {
+      background: linear-gradient(135deg, #757575, #9e9e9e) !important;
+      border: none !important;
+      color: white !important;
+      padding: 12px 24px !important;
+      border-radius: 10px !important;
+      font-weight: 600 !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.5px !important;
+      transition: all 0.3s ease !important;
+      box-shadow: 0 4px 15px rgba(117, 117, 117, 0.3) !important;
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(135deg, #616161, #757575) !important;
+      transform: translateY(-2px) scale(1.02) !important;
+      box-shadow: 0 8px 25px rgba(117, 117, 117, 0.4) !important;
+    }
+
+    .btn-close {
+      background: rgba(255,255,255,0.2) !important;
+      border: 2px solid rgba(255,255,255,0.3) !important;
+      border-radius: 50% !important;
+      width: 35px !important;
+      height: 35px !important;
+      opacity: 0.9 !important;
+      transition: all 0.3s ease !important;
+    }
+
+    .btn-close:hover {
+      background: rgba(255,255,255,0.35) !important;
+      border-color: rgba(255,255,255,0.5) !important;
+      opacity: 1 !important;
+      transform: rotate(90deg) scale(1.1);
+    }
+
+    /* Checkbox styling */
+    input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent-green);
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    input[type="checkbox"]:hover {
+      transform: scale(1.1);
+    }
+
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+      .summary-card {
+        position: static;
+        max-width: 100%;
+        margin-top: 20px;
+      }
+      
+      .cart-table {
+        font-size: 13px;
+      }
+      
+      .product-img {
+        width: 60px;
+        height: 60px;
+      }
+      
+      .quantity-input {
+        width: 60px;
+        padding: 8px 10px;
+      }
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .cart-table tbody tr {
+      animation: fadeInUp 0.3s ease forwards;
+    }
+
+    .cart-table tbody tr:nth-child(2) { animation-delay: 0.1s; }
+    .cart-table tbody tr:nth-child(3) { animation-delay: 0.2s; }
+    .cart-table tbody tr:nth-child(4) { animation-delay: 0.3s; }
+  </style>
+</head>
+<body>
+
+  <nav aria-label="breadcrumb" class="mb-3">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#" style="color:#0d6efd; text-decoration:none;">Trang chủ</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Giỏ hàng</li>
+    </ol>
+  </nav>
+
+<div class="container-fluid px-0">
+  <h5 class="mb-4" id="cartTitle" style="font-weight: 600;">Giỏ hàng</h5>
+
+  <!-- TÁCH ROW NÚT RA -->
+  <div class="row mb-2">
+    <div class="col-lg-8 col-12 ps-0">
+      <button id="btnSelectAll" class="btn btn-sm btn-outline-primary">Chọn tất cả</button>
+      <button id="btnDeleteAll" class="btn btn-sm btn-danger" style="display:none; margin-left:8px;">Xóa tất cả</button>
+    </div>
+  </div>
+
+  <!-- PHẦN CHÍNH: bảng sản phẩm + hóa đơn -->
+  <div class="row g-4 align-items-start">
+    <div class="col-lg-8 col-12 ps-0">
+      <table class="cart-table w-100">
+          <thead>
+            <tr>
+              <th scope="col" style="width:40px; padding:12px 0;"></th>
+              <th scope="col" style="min-width:240px; padding:12px 0; padding-left: 25px;">Sản phẩm</th>
+              <th scope="col" style="width:130px; padding:12px 0;">Giá tiền</th>
+              <th scope="col" style="width:115px; padding:12px 0;">Số lượng</th>
+              <th scope="col" style="width:130px; padding:12px 0;">Thành tiền</th>
+              <th scope="col" style="width:60px; padding:12px 0;"></th>
+
+            </tr>
+          </thead>
+          <tbody id="cartBody">
+            <!-- Sản phẩm sẽ được render bằng JS -->
+          </tbody>
+ </table>
+      <a href="#" class="continue-shopping" id="btnContinueShopping"> Tiếp tục mua hàng</a>
+    </div>
+
+    <!-- HÓA ĐƠN -->
+    <div class="col-lg-4 col-12">
+      <div class="summary-card">
+          <div class="summary-title">Hóa đơn của bạn</div>
+          <div class="summary-row">
+            <span>Tạm tính:</span>
+            <strong id="subtotal">1.149.000 ₫</strong>
+          </div>
+          <div class="summary-row" style="font-size: 16px; font-weight: 700; color: #d33838; border-top: 1px solid #ddd; padding-top: 10px;">
+            <span>Tổng cộng:</span>
+            <strong id="total">1.149.000 ₫</strong>
+          </div>
+          <!-- ✅ THÊM id="btnCheckout" TẠI ĐÂY -->
+          <button type="button" id="btnCheckout" class="btn btn-checkout mt-3">Tiến hành đặt hàng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function formatVND(n) {
+      return n.toLocaleString('vi-VN') + ' ₫';
+    }
+
+    function getCart() {
+      return JSON.parse(localStorage.getItem('cart')) || [];
+    }
+
+    function setCart(cart) {
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    function getSelected() {
+      return JSON.parse(localStorage.getItem('cartSelected')) || [];
+    }
+
+    function setSelected(selected) {
+      localStorage.setItem('cartSelected', JSON.stringify(selected));
+    }
+
+    function renderCart() {
+      const cart = getCart();
+      const selected = getSelected();
+      const cartBody = document.getElementById('cartBody');
+      const cartTitle = document.getElementById('cartTitle');
+      let subtotal = 0;
+      // Đếm số sản phẩm (không tính số lượng), chỉ đếm sản phẩm được chọn
+      let totalItems = cart.length;
+      let selectedCount = selected.length;
+      if (cart.length === 0) {
+        cartTitle.textContent = "Giỏ hàng trống";
+        cartBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color:#888; font-size:16px;">Không có sản phẩm nào trong giỏ hàng.</td></tr>`;
+        document.getElementById('subtotal').textContent = formatVND(0);
+        document.getElementById('total').textContent = formatVND(0);
+        document.getElementById('btnSelectAll').style.display = 'none';
+        document.getElementById('btnDeleteAll').style.display = 'none';
+        return;
+      }
+      document.getElementById('btnSelectAll').style.display = '';
+      cartTitle.textContent = `Giỏ hàng (${totalItems} sản phẩm) - Đã chọn (${selectedCount} sản phẩm)`;
+      cartBody.innerHTML = cart.map((item, idx) => {
+        const attrsHtml = Object.keys(item.attrs || {}).map(key =>
+          `<div style="font-size:13px;color:#555;"><strong>${key}:</strong> ${item.attrs[key]}</div>`
+        ).join('');
+        const checked = selected.includes(idx) ? 'checked' : '';
+        const itemTotal = item.price * item.quantity;
+        if (selected.includes(idx)) subtotal += itemTotal;
+        return `
+          <tr>
+            <td style="padding-left: 15px;">
+              <input type="checkbox" class="select-item" data-idx="${idx}" ${checked} />
+            </td>
+            <td>
+             <div class="d-flex align-items-start" style="padding-left: 25px;">
+                <img src="https://placehold.co/70x70" alt="${item.name}" class="product-img" />
+                <div class="product-info">
+                  <strong>${item.name}</strong>
+                  ${attrsHtml}
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="price-current" data-price="${item.price}">${formatVND(item.price)}</span>
+            </td>
+            <td>
+              <input type="number" class="quantity-input" min="1" max="99" value="${item.quantity}" aria-label="Số lượng ${item.name}" data-idx="${idx}" />
+            </td>
+            <td class="price-current" data-price="${item.price}">${formatVND(itemTotal)}</td>
+            <td>
+                <button class="btn-delete" data-idx="${idx}" aria-label="Xóa sản phẩm">
+                  <i class="fa-solid fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+      document.getElementById('subtotal').textContent = formatVND(subtotal);
+      document.getElementById('total').textContent = formatVND(subtotal);
+
+      // Hiện nút "Xóa tất cả" nếu đã chọn tất cả
+      const btnDeleteAll = document.getElementById('btnDeleteAll');
+      if (selected.length === cart.length && cart.length > 0) {
+        btnDeleteAll.style.display = '';
+      } else {
+        btnDeleteAll.style.display = 'none';
+      }
+    }
+
+    function updateCart() {
+      const cart = getCart();
+      let rows = document.querySelectorAll('#cartBody tr');
+      let subtotal = 0;
+      const selected = getSelected();
+
+      rows.forEach((row, idx) => {
+        const priceCell = row.querySelector('span.price-current[data-price]');
+        const qtyInput = row.querySelector('.quantity-input');
+        const totalCell = row.cells[4];
+
+        if (!priceCell || !qtyInput || !totalCell) return;
+
+        let price = parseInt(priceCell.getAttribute('data-price'), 10);
+        let qty = parseInt(qtyInput.value, 10);
+
+        if (isNaN(qty) || qty < 1) qty = 1;
+        if (qty > 99) qty = 99;
+
+        qtyInput.value = qty;
+
+        let itemTotal = price * qty;
+        totalCell.textContent = formatVND(itemTotal);
+
+        // Cập nhật số lượng trong localStorage
+        cart[idx].quantity = qty;
+
+        if (selected.includes(idx)) subtotal += itemTotal;
+      });
+
+      setCart(cart);
+      renderCart();
+      bindQuantityInputs();
+      bindDeleteButtons();
+      bindSelectItems();
+    }
+
+    function bindQuantityInputs() {
+      document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('input', updateCart);
+        input.addEventListener('change', updateCart);
+      });
+    }
+
+    function bindDeleteButtons() {
+      document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', function () {
+          const idx = parseInt(btn.getAttribute('data-idx'), 10);
+          let cart = getCart();
+          let selected = getSelected();
+          cart.splice(idx, 1);
+          selected = selected.filter(i => i !== idx).map(i => i > idx ? i - 1 : i);
+          setCart(cart);
+          setSelected(selected);
+          renderCart();
+          bindQuantityInputs();
+          bindDeleteButtons();
+          bindSelectItems();
+        });
+      });
+    }
+
+    function bindSelectItems() {
+      document.querySelectorAll('.select-item').forEach(chk => {
+        chk.addEventListener('change', function () {
+          const idx = parseInt(chk.getAttribute('data-idx'), 10);
+          let selected = getSelected();
+          if (chk.checked) {
+            if (!selected.includes(idx)) selected.push(idx);
+          } else {
+            selected = selected.filter(i => i !== idx);
+          }
+          setSelected(selected);
+          renderCart();
+          bindQuantityInputs();
+          bindDeleteButtons();
+          bindSelectItems();
+        });
+      });
+    }
+
+    function bindSelectAll() {
+      const btnSelectAll = document.getElementById('btnSelectAll');
+      btnSelectAll.addEventListener('click', function () {
+        const cart = getCart();
+        const selected = getSelected();
+        if (cart.length === 0) return;
+        // Nếu đã chọn tất cả thì bỏ chọn, ngược lại thì chọn tất cả
+        if (selected.length === cart.length) {
+          setSelected([]);
+        } else {
+          setSelected(cart.map((_, idx) => idx));
+        }
+        renderCart();
+        bindQuantityInputs();
+        bindDeleteButtons();
+        bindSelectItems();
+      });
+    }
+
+    function bindDeleteAll() {
+      const btnDeleteAll = document.getElementById('btnDeleteAll');
+      btnDeleteAll.addEventListener('click', function () {
+        setCart([]);
+        setSelected([]);
+        renderCart();
+        bindQuantityInputs();
+        bindDeleteButtons();
+        bindSelectItems();
+      });
+    }
+
+    function bindCheckoutButton() {
+      const btnCheckout = document.getElementById('btnCheckout');
+      if (btnCheckout) {
+        btnCheckout.addEventListener('click', function () {
+          const cart = getCart();
+          const selected = getSelected();
+          
+          if (cart.length === 0) {
+            // Hiện modal thông báo giỏ hàng trống
+            const modal = new bootstrap.Modal(document.getElementById('emptyCartModal'));
+            modal.show();
+            return;
+          }
+          
+          if (selected.length === 0) {
+            // Hiện modal thông báo chưa chọn sản phẩm
+            const modal = new bootstrap.Modal(document.getElementById('noSelectedModal'));
+            modal.show();
+            return;
+          }
+          
+          // Lưu thông tin sản phẩm đã chọn để thanh toán
+          const selectedItems = cart.filter((_, idx) => selected.includes(idx));
+          localStorage.setItem('orderItems', JSON.stringify(selectedItems));
+          
+          // Chuyển đến trang thanh toán
+          window.location.href = 'thanhtoan.html';
+        });
+      }
+    }
+
+    function bindContinueShopping() {
+      const btnContinue = document.getElementById('btnContinueShopping');
+      if (btnContinue) {
+        btnContinue.addEventListener('click', function (e) {
+          e.preventDefault();
+          window.location.href = 'sanpham.html';
+        });
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      // Nếu chưa có selected thì mặc định chọn tất cả
+      if (getSelected().length === 0 && getCart().length > 0) {
+        setSelected(getCart().map((_, idx) => idx));
+      }
+      renderCart();
+      bindQuantityInputs();
+      bindDeleteButtons();
+      bindSelectItems();
+      bindCheckoutButton();
+      bindContinueShopping();
+      bindSelectAll();
+      bindDeleteAll();
+    });
+
+    document.getElementById('btnCheckout').addEventListener('click', function () {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const selected = JSON.parse(localStorage.getItem('cartSelected')) || [];
+
+    if (cart.length === 0) {
+        const modal = new bootstrap.Modal(document.getElementById('emptyCartModal'));
+        modal.show();
+        return;
+    }
+
+    if (selected.length === 0) {
+        const modal = new bootstrap.Modal(document.getElementById('noSelectedModal'));
+        modal.show();
+        return;
+    }
+
+    const selectedItems = cart.filter((_, idx) => selected.includes(idx));
+    localStorage.setItem('orderItems', JSON.stringify(selectedItems)); // Lưu vào localStorage tạm
+
+    window.location.href = 'thanhtoan.html';
+});
+
+  </script>
+
+  <!-- Modal thông báo đặt hàng thành công -->
+  <div class="modal fade" id="orderSuccessModal" tabindex="-1" aria-labelledby="orderSuccessLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="orderSuccessLabel">
+            <i class="fas fa-check-circle mr-2"></i>
+            Đặt hàng thành công!
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <i class="fas fa-gift text-4xl mb-3" style="color: var(--accent-green);"></i>
+            <p>Bạn đã đặt hàng thành công!</p>
+            <p>Cảm ơn bạn đã mua sắm tại <strong style="color: var(--primary-green);">LITTLEFISH</strong>.</p>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+            <i class="fas fa-thumbs-up mr-2"></i>Hoàn tất
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal thông báo giỏ hàng trống -->
+  <div class="modal fade" id="emptyCartModal" tabindex="-1" aria-labelledby="emptyCartLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="emptyCartLabel">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            Thông báo
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <i class="fas fa-shopping-cart text-4xl mb-3" style="color: var(--accent-green); opacity: 0.5;"></i>
+            <p>Giỏ hàng của bạn đang chưa có sản phẩm nào.</p>
+            <p class="text-muted">Hãy thêm sản phẩm để tiếp tục mua sắm!</p>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-times mr-2"></i>Đóng
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal thông báo chưa chọn sản phẩm nào -->
+  <div class="modal fade" id="noSelectedModal" tabindex="-1" aria-labelledby="noSelectedLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="noSelectedLabel">
+            <i class="fas fa-info-circle mr-2"></i>
+            Thông báo
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
+        </div>
+        <div class="modal-body">
+          <div class="text-center">
+            <i class="fas fa-hand-pointer text-4xl mb-3" style="color: var(--accent-green);"></i>
+            <p>Bạn chưa chọn sản phẩm nào.</p>
+            <p class="text-muted">Vui lòng chọn ít nhất một sản phẩm để tiếp tục!</p>
+          </div>
+        </div>
+        <div class="modal-footer justify-content-center">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="fas fa-check mr-2"></i>Đã hiểu
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Xử lý khi modal đóng, đảm bảo không bị "đơ" giao diện
+    document.getElementById('emptyCartModal').addEventListener('hidden.bs.modal', function () {
+      document.body.classList.remove('modal-open');
+      // Xóa backdrop nếu còn sót lại
+      document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    });
+  </script>
+</body>
+</html>
